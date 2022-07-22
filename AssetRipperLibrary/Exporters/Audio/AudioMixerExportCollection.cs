@@ -84,11 +84,7 @@ namespace AssetRipper.Library.Exporters.Audio
 
 				var group = groups[effectConstant.GroupConstantIndex];
 				group.Effects_C243.Add(effectPPtr);
-				if (effect.EffectName_C244 == "Attenuation")
-				{
-					groupsWithAttenuation.Add(group);
-				}
-				
+
 				effect.EffectID_C244.CopyValues(constants.EffectGUIDs[i]);
 
 				if (FMODDefinitions.IsPluginEffect(effectConstant.Type))
@@ -99,6 +95,10 @@ namespace AssetRipper.Library.Exporters.Audio
 				{
 					var name = FMODDefinitions.EffectTypeToName(effectConstant.Type) ?? "Unknown";
 					effect.EffectName_C244.String = name;
+					if (name == "Attenuation")
+					{
+						groupsWithAttenuation.Add(group);
+					}
 				}
 
 				bool enableWetMix = (int)effectConstant.WetMixLevelIndex != -1;
