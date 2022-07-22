@@ -5,6 +5,7 @@ using AssetRipper.Core.Logging;
 using AssetRipper.Core.Parser.Files.SerializedFiles;
 using AssetRipper.Core.Project.Collections;
 using AssetRipper.Core.Project.Exporters;
+using AssetRipper.Core.Utils;
 using AssetRipper.SourceGenerated.Classes.ClassID_241;
 using AssetRipper.SourceGenerated.Classes.ClassID_243;
 using AssetRipper.SourceGenerated.Classes.ClassID_244;
@@ -197,12 +198,12 @@ namespace AssetRipper.Library.Exporters.Audio
 			for (int i = 0; i < constants.ExposedParameterIndices.Length; i++)
 			{
 				var paramIndex = constants.ExposedParameterIndices[i];
+				var paramNameCrc = (int)constants.ExposedParameterNames[i];
 				if (indexToGUID.TryGetValue(paramIndex, out var paramGUID))
 				{
 					var exposedParam = mixer.ExposedParameters_C241.AddNew();
 					exposedParam.Guid.CopyValues(paramGUID);
-					// TODO try to compute reverse CRC32 to get the correct parameter name
-					exposedParam.NameString = $"ExposedParam_{paramIndex}";
+					exposedParam.NameString = $"{CrcUtils.ReverseCrc32(paramNameCrc)}";
 				}
 				else
 				{
