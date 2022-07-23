@@ -4,6 +4,7 @@ using AssetRipper.Core.Classes.Object;
 using AssetRipper.Core.Interfaces;
 using AssetRipper.Core.Logging;
 using AssetRipper.Core.Parser.Files.SerializedFiles;
+using AssetRipper.Core.Project;
 using AssetRipper.Core.Project.Collections;
 using AssetRipper.Core.Project.Exporters;
 using AssetRipper.Core.Utils;
@@ -16,13 +17,12 @@ using AssetRipper.SourceGenerated.Subclasses.PPtr_AudioMixerEffectController_;
 using AssetRipper.SourceGenerated.Subclasses.Utf8String;
 using Cpp2IL.Core;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Logger = AssetRipper.Core.Logging.Logger;
 
 namespace AssetRipper.Library.Exporters.Audio
 {
-	public partial class AudioMixerExportCollection : AssetsExportCollection
+	public class AudioMixerExportCollection : AssetsExportCollection
 	{
 		public AudioMixerExportCollection(IAssetExporter assetExporter, VirtualSerializedFile virtualFile, IAudioMixerController mixer) : base(assetExporter, mixer)
 		{
@@ -109,28 +109,12 @@ namespace AssetRipper.Library.Exporters.Audio
 					effect.MixLevel_C244.CopyValues(IndexingNewGUID(effectConstant.WetMixLevelIndex, indexToGUID));
 				}
 
-				string[] parameterNames;
-				
-				if (effect.EffectName_C244 == "Duck Volume")
-				{
-					parameterNames = new[]
-					{
-						"Threshold", "Ratio", "Attack Time", "Release Time", "Make-up Gain", "Knee", "Sidechain Mix"
-					};
-					Debug.Assert(parameterNames.Length == effectConstant.ParameterIndices.Length);
-				}
-				else
-				{
-					// TODO get correct parameter names
-					// dummy parameter names should not cause any problem though
-					int parameterCount = effectConstant.ParameterIndices.Length;
-					parameterNames = Enumerable.Range(0, parameterCount).Select(j => $"Param_{j}").ToArray();
-				}
-				
 				for (int j = 0; j < effectConstant.ParameterIndices.Length; j++)
 				{
 					var param = effect.Parameters_C244.AddNew();
-					param.ParameterName.String = parameterNames[j];
+					// Use a dummy name here. The actual name will be recovered by AssetRipperAudioMixerPostprocessor.
+					param.ParameterName.String = $"Param_{j}";
+					HasAnyEffectParameterNameToRecover = true;
 					param.GUID.CopyValues(IndexingNewGUID(effectConstant.ParameterIndices[j], indexToGUID));
 				}
 				
@@ -255,5 +239,26 @@ namespace AssetRipper.Library.Exporters.Audio
 		}
 		
 		protected override string GetExportExtension(IUnityObjectBase asset) => "mixer";
+		
+		private bool HasAnyEffectParameterNameToRecover { get; set; }
+		
+		protected override bool ExportInner(IProjectAssetContainer container, string filePath, string dirPath)
+		{
+			if (HasAnyEffectParameterNameToRecover)
+			{
+				// Put an editor script file in the exported project. See comments in the file for more detail.
+				var postprocessorScriptPath = System.IO.Path.Combine(dirPath,
+					"Assets/MonoScript/Editor/AssetRipperAudioMixerPostprocessor.cs");
+				if (!System.IO.File.Exists(postprocessorScriptPath))
+				{
+					System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(postprocessorScriptPath));
+					System.IO.File.WriteAllBytes(postprocessorScriptPath,
+						Properties.Resources.AssetRipperAudioMixerPostprocessor);
+				}
+			}
+
+			return AudioMixerExporterBugHacker.HackedExporter(container,
+				Assets.Select(t => Convert(t, container)), filePath);
+		}
 	}
 }

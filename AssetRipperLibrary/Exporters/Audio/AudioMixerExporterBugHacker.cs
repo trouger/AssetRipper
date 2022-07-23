@@ -5,19 +5,13 @@ using AssetRipper.SourceGenerated.Classes.ClassID_245;
 using AssetRipper.Yaml;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace AssetRipper.Library.Exporters.Audio
 {
-	public partial class AudioMixerExportCollection
+	public static class AudioMixerExporterBugHacker
 	{
-		protected override bool ExportInner(IProjectAssetContainer container, string filePath, string dirPath)
-		{
-			return HackedExporter(container, Assets.Select(t => Convert(t, container)), filePath);
-		}
-
-		private bool HackedExporter(IExportContainer container, IEnumerable<IUnityObjectBase> assets, string path)
+		public static bool HackedExporter(IExportContainer container, IEnumerable<IUnityObjectBase> assets, string path)
 		{
 			using Stream fileStream = System.IO.File.Create(path);
 			using InvariantStreamWriter streamWriter = new InvariantStreamWriter(fileStream, UTF8);
