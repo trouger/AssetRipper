@@ -237,6 +237,15 @@ namespace AssetRipper.Library.Exporters.Audio
 
 			return names;
 		}
+
+		private uint m_nextExportID;
+		
+		protected override long GenerateExportID(IUnityObjectBase asset)
+		{
+			long exportID = ExportIdHandler.GetMainExportID(asset, m_nextExportID);
+			m_nextExportID += 2;
+			return exportID;
+		}
 		
 		protected override string GetExportExtension(IUnityObjectBase asset) => "mixer";
 		

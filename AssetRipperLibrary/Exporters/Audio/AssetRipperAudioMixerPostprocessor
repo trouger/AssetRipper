@@ -25,16 +25,21 @@ public class AssetRipperAudioMixerPostprocessor : AssetPostprocessor
         var editorAssembly = typeof(AssetPostprocessor).Assembly;
         AudioMixerEffectControllerType = editorAssembly.GetType("UnityEditor.Audio.AudioMixerEffectController", true);
         PreallocateGUIDsMethod = AudioMixerEffectControllerType.GetMethod("PreallocateGUIDs", BindingFlags.Public | BindingFlags.Instance);
-        Debug.Assert(PreallocateGUIDsMethod != null);
+        if (PreallocateGUIDsMethod == null)
+        {
+            Debug.LogError("AudioMixerEffectController.PreallocateGUIDs() method is missing in this version of Unity. "
+                + "Audio effect parameter values will be reset to default.");
+        }
 
         var mixerEffectDefinitionsType = editorAssembly.GetType("UnityEditor.Audio.MixerEffectDefinitions", true);
         GetAudioEffectNamesMethod = mixerEffectDefinitionsType.GetMethod("GetAudioEffectNames", BindingFlags.Public | BindingFlags.Static);
-        Debug.Assert(GetAudioEffectNamesMethod != null);
     }
 
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
-        bool firstTime = true;
+        if (PreallocateGUIDsMethod == null) return;
+
+        bool printEffectNames = GetAudioEffectNamesMethod != null;
 
         foreach (var importedAsset in importedAssets)
         {
@@ -44,14 +49,14 @@ public class AssetRipperAudioMixerPostprocessor : AssetPostprocessor
                 {
                     if (asset.GetType() == AudioMixerEffectControllerType)
                     {
-                    	if (firstTime)
+                    	if (printEffectNames)
                         {
-                            firstTime = false;
-                            var effectNames = GetAudioEffectNamesMethod.Invoke(null, Array.Empty<object>()) as string[];
-                            Debug.Log($"MixerEffectDefinitions.GetAudioEffectNames returns [{String.Join(", ", effectNames)}]");
+                            printEffectNames = false;
+                            var effectNames = GetAudioEffectNamesMethod.Invoke(null, new object[0]) as string[];
+                            Debug.LogFormat("MixerEffectDefinitions.GetAudioEffectNames returns [{0}]", String.Join(", ", effectNames));
                         }
-                        PreallocateGUIDsMethod.Invoke(asset, Array.Empty<object>());
-                        Debug.Log($"AudioMixerEffectController.PreallocateGUIDs has been called on {asset}");
+                        PreallocateGUIDsMethod.Invoke(asset, new object[0]);
+                        Debug.LogFormat("AudioMixerEffectController.PreallocateGUIDs has been called on {0}", asset);
                         EditorUtility.SetDirty(asset);
                     }
                 }
