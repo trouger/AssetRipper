@@ -1,5 +1,6 @@
 using AssetRipper.Core;
 using AssetRipper.Core.Classes.Misc;
+using AssetRipper.Core.Classes.Object;
 using AssetRipper.Core.Interfaces;
 using AssetRipper.Core.Logging;
 using AssetRipper.Core.Parser.Files.SerializedFiles;
@@ -69,6 +70,7 @@ namespace AssetRipper.Library.Exporters.Audio
 			for (int i = 0; i < effects.Length; i++)
 			{
 				var effect = virtualFile.CreateAsset<IAudioMixerEffectController>(ClassIDType.AudioMixerEffectController);
+				effect.ObjectHideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 				var effectPPtr = new PPtr_AudioMixerEffectController_();
 				effectPPtr.CopyValues(effect.SerializedFile.CreatePPtr(effect));
 				effects[i] = (effect, effectPPtr);
@@ -147,6 +149,7 @@ namespace AssetRipper.Library.Exporters.Audio
 				if (!groupsWithAttenuation.Contains(group))
 				{
 					var effect = virtualFile.CreateAsset<IAudioMixerEffectController>(ClassIDType.AudioMixerEffectController);
+					effect.ObjectHideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 					var effectPPtr = new PPtr_AudioMixerEffectController_();
 					effectPPtr.CopyValues(effect.SerializedFile.CreatePPtr(effect));
 					group.Effects_C243.Add(effectPPtr);
