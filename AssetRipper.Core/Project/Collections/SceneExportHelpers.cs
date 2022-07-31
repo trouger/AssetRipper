@@ -43,19 +43,10 @@ namespace AssetRipper.Core.Project.Collections
 		public static bool HasMainData(UnityVersion version) => version.IsLess(5, 3);
 
 		/// <summary>
-		/// GameObject, Classes Inherited From Level Game Manager, Monobehaviours with GameObjects, Components
+		/// All assets are considered compatible into the scene file.
+		/// <see href="https://github.com/trouger/AssetRipper/issues/8"/>
 		/// </summary>
-		public static bool IsSceneCompatible(IUnityObjectBase asset)
-		{
-			return asset switch
-			{
-				IGameObject => true,
-				ILevelGameManager => true,
-				IMonoBehaviour monoBeh => monoBeh.IsSceneObject(),
-				IComponent => true,
-				_ => false
-			};
-		}
+		public static bool IsSceneCompatible(IUnityObjectBase asset) => true;
 
 		public static string SceneIndexToFileName(int index, UnityVersion version)
 		{

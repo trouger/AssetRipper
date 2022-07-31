@@ -120,6 +120,13 @@ namespace AssetRipper.Core.Project
 
 		protected IExportCollection CreateCollection(VirtualSerializedFile file, IUnityObjectBase asset)
 		{
+			// Short path for all assets in a scene file.
+			// <see href="https://github.com/trouger/AssetRipper/issues/8"/>
+			if (asset.SerializedFile.Collection.IsScene(asset.SerializedFile))
+			{
+				return SceneExporter.CreateCollection(file, asset);
+			}
+			
 			Stack<IAssetExporter> exporters = GetExporterStack(asset);
 			foreach (IAssetExporter exporter in exporters)
 			{

@@ -4,11 +4,16 @@ using AssetRipper.Core.Project.Collections;
 
 namespace AssetRipper.Core.Project.Exporters
 {
+	/// <summary>
+	/// The name of this class is somewhat misleading.
+	/// This class handles both scene files and prefabs.
+	/// </summary>
 	public class SceneYamlExporter : YamlExporterBase
 	{
 		public override bool IsHandle(IUnityObjectBase asset)
 		{
-			return SceneExportHelpers.IsSceneCompatible(asset);
+			return asset.SerializedFile.Collection.IsScene(asset.SerializedFile) ||
+			       PrefabExportCollection.IsValidAsset(asset);
 		}
 
 		public override IExportCollection CreateCollection(VirtualSerializedFile virtualFile, IUnityObjectBase asset)
