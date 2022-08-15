@@ -1,12 +1,16 @@
 ﻿using AssetRipper.Core.Classes.Misc;
 using AssetRipper.Core.Parser.Files.SerializedFiles;
+using AssetRipper.Core.Utils;
 
 namespace AssetRipper.Core.Parser.Asset
 {
 	public sealed partial class AssetInfo
 	{
 		public AssetInfo(ISerializedFile serializedFile, long pathID, ClassIDType classID)
-			: this(serializedFile, pathID, classID, UnityGUID.NewGuid()) { }
+			: this(serializedFile, pathID, classID, GuidUtils.UnityAssetGuid(serializedFile, $"AssetInfo+{pathID}+{classID}"))
+		{
+		}
+
 		public AssetInfo(ISerializedFile serializedFile, long pathID, ClassIDType classID, UnityGUID guid)
 		{
 			File = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile));
