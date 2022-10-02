@@ -48,10 +48,14 @@ namespace AssetRipper.Core.Project.Collections
 				}
 			}
 		}
-
+		
+		private uint m_nextExportID;
+		
 		protected virtual long GenerateExportID(IUnityObjectBase asset)
 		{
-			return ObjectUtils.GenerateExportID(asset, ContainsID);
+			long exportID = ExportIdHandler.GetMainExportID(asset, m_nextExportID);
+			m_nextExportID += 2;
+			return exportID;
 		}
 
 		protected void AddAsset(IUnityObjectBase asset)

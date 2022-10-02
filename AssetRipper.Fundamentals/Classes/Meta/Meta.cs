@@ -44,7 +44,7 @@ namespace AssetRipper.Core.Classes.Meta
 			}
 			if (HasLicenseData)
 			{
-				root.Add(TimeCreatedName, CurrentTick);
+				root.Add(TimeCreatedName, CreatedTimeStamp);
 				root.Add(LicenseTypeName, "Free");
 			}
 			//if (Importer.IncludesImporter(container.ExportVersion)) //For now, assume true
@@ -59,7 +59,7 @@ namespace AssetRipper.Core.Classes.Meta
 		public bool HasLicenseData { get; }
 		public IUnityObjectBase Importer { get; }
 
-		private long CurrentTick => (DateTime.Now.Ticks - 0x089f7ff5f7b58000) / 10000000;
+		private long CreatedTimeStamp => (new DateTime(2022, 7, 27, 22, 7, 7).Ticks - 0x089f7ff5f7b58000) / 10000000;
 
 		public const string FileFormatVersionName = "fileFormatVersion";
 		public const string GuidName = "guid";
