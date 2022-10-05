@@ -6,6 +6,7 @@ using AssetRipper.Core.Parser.Asset;
 using AssetRipper.Core.Parser.Files.SerializedFiles;
 using AssetRipper.Core.Project.Exporters;
 using AssetRipper.Core.SourceGenExtensions;
+using AssetRipper.Core.Utils;
 using AssetRipper.SourceGenerated.Classes.ClassID_1030;
 using AssetRipper.SourceGenerated.Classes.ClassID_1034;
 using AssetRipper.SourceGenerated.Classes.ClassID_29;
@@ -43,7 +44,7 @@ namespace AssetRipper.Core.Project.Collections
 			}
 			if (GUID.IsZero)
 			{
-				GUID = UnityGUID.NewGuid();
+				GUID = GuidUtils.UnityAssetGuid(file, $"UnityScene+{Name}");
 			}
 
 			foreach (IUnityObjectBase comp in Components)

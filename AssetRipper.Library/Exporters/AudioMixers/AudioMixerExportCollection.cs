@@ -173,7 +173,8 @@ namespace AssetRipper.Library.Exporters.AudioMixers
 					group.Effects_C243.Add(effectPPtr);
 					AddAsset(effect);
 					
-					effect.EffectID_C244.CopyValues((GUID)UnityGUID.NewGuid());
+					effect.EffectID_C244.CopyValues((GUID)GuidUtils.UnityAssetGuid(context.Mixer.SerializedFile,
+						$"AudioMixer({context.Mixer.GUID})+AudioMixerEffect+{new PPtr<IAudioMixerEffectController>(effectPPtr)}"));
 					effect.EffectName_C244.String = "Attenuation";
 				}
 			}
@@ -248,9 +249,9 @@ namespace AssetRipper.Library.Exporters.AudioMixers
 			context.Mixer.TargetSnapshot_C241.CopyValues(context.Mixer.StartSnapshot_C241);
 		}
 		
-		private static GUID IndexingNewGuid(uint index, Dictionary<uint, GUID> table)
+		private GUID IndexingNewGuid(uint index, Dictionary<uint, GUID> table)
 		{
-			GUID guid = (GUID)UnityGUID.NewGuid();
+			GUID guid = (GUID)GuidUtils.UnityAssetGuid(Asset.SerializedFile, $"AudioMixer({Asset.GUID})+IndexingNewGUID+{index}");
 			if (!table.TryAdd(index, guid))
 			{
 				Logger.Warning(LogCategory.Export, $"Constant index #{index} conflicts with another one.");

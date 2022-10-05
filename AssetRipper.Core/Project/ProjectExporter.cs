@@ -8,6 +8,7 @@ using AssetRipper.Core.Parser.Files.SerializedFiles;
 using AssetRipper.Core.Project.Collections;
 using AssetRipper.Core.Project.Exporters;
 using AssetRipper.Core.Structure;
+using AssetRipper.Core.Utils;
 using AssetRipper.SourceGenerated.Classes.ClassID_1;
 using AssetRipper.SourceGenerated.Classes.ClassID_114;
 using AssetRipper.SourceGenerated.Classes.ClassID_116;
@@ -174,6 +175,8 @@ namespace AssetRipper.Core.Project
 		public void Export(GameCollection fileCollection, IEnumerable<SerializedFile> files, CoreConfiguration options)
 		{
 			EventExportPreparationStarted?.Invoke();
+			
+			GuidUtils.Reset();
 
 			LayoutInfo exportLayout = new LayoutInfo(options.Version, options.Platform, options.Flags);
 			VirtualSerializedFile virtualFile = new VirtualSerializedFile(exportLayout);
